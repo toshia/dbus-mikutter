@@ -182,3 +182,5 @@
 	 source-recent-timeline)
        nil "Mikuttering: " nil nil))))
 
+
+(provide 'mikuttering-mode)

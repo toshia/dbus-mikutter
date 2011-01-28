@@ -5,6 +5,8 @@
 require_if_exist 'rubygems'
 require_if_exist 'dbus'
 
+miquire :core, 'message'
+
 if defined?(DBus::Object)
   Module.new do
 
@@ -19,9 +21,13 @@ if defined?(DBus::Object)
 
       dbus_interface "org.mikutter.events.timeline" do
         dbus_signal :timeline_update, ":s"
-        dbus_method :post, "in contents:s" do |contents|
+        dbus_method :post, "in contents:s, in replyid:s" do |contents, replyid|
           if @mikuservice
-            @mikuservice.update(:message => contents) { |stat,value|
+            repmess = nil
+            if replyid.to_i != 0
+              repmes = Message.findbyid(replyid.to_i)
+            end
+            @mikuservice.update(:message => contents, :replyto => repmes) { |stat,value|
               # なんもしない
             }
           end

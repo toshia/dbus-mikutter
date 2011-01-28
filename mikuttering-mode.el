@@ -1,3 +1,5 @@
+(require 'dbus)
+
 (defconst mikuttering-post-buffer-name "mikuttering post")
 (defconst mikuttering-dbus-machine-id-file "/var/lib/dbus/machine-id")
 (defconst mikuttering-dbus-mikutter-service "org.mikutter.service")

@@ -121,7 +121,8 @@
 		    (point-min) 'read-only)
 		   (point-min))))
       (mikuttering-dbus-call "post"
-			     (buffer-substring pos (point-max))
+			     (encode-coding-string
+			      (buffer-substring pos (point-max)) 'utf-8)
 			     (if mikuttering-reply-id
 				 (number-to-string mikuttering-reply-id)
 			       "0"))

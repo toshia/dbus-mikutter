@@ -36,34 +36,12 @@
 		    (dbus-list-known-names :session))
 	    :session
 	  ;; Emacs が session bus につなぎにいけないおばかさんなので自分でがんばる
-	  (unless (string-match "\\`:\\(.+\\)$"
-				x-display-name)
-	    (error "Failed to determine bus address"))
-	  (let* ((display-name (match-string 1 x-display-name))
-		 (machine-id
-		  (with-temp-buffer
-		    (insert-file-contents mikuttering-dbus-machine-id-file)
-		    (goto-char (point-min))
-		    (buffer-substring (point-min)
-				      (progn
-					(search-forward "\n")
-					(1- (point))))))
-		 (filename (expand-file-name
-			    (concat machine-id "-" display-name)
-			    "~/.dbus/session-bus")))
-	    (with-temp-buffer
-	      (unless (file-exists-p filename)
-		(error "Failed to determine bus address"))
-	      (insert-file-contents filename)
-	      (goto-char (point-min))
-	      (unless (re-search-forward
-		       "^DBUS_SESSION_BUS_ADDRESS=\\(.*\\)$" nil t)
-		(error "Failed to determine bus address"))
-	      (let ((bus (match-string 1)))
-		(unless (member mikuttering-dbus-mikutter-service
-				(dbus-list-known-names bus))
-		  (error "Failed to determine bus address"))
-		bus)))))
+	  (let ((bus (getenv "DBUS_SESSION_BUS_ADDRESS")))
+	    (unless (and (>= emacs-major-version 24)
+			 (member mikuttering-dbus-mikutter-service
+				 (dbus-list-known-names bus)))
+	      (error "Failed to determine bus address"))
+	    bus)))
   (setq mikuttering-timeline-update-signal-object
 	(dbus-register-signal mikuttering-dbus-bus
 			      mikuttering-dbus-mikutter-service
